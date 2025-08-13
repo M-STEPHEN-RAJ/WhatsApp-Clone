@@ -8,6 +8,7 @@ import ChatPage from './Pages/ChatPage'
 import SignUpPage from './Pages/SignUpPage.jsx'
 import { ToastContainer, Bounce } from 'react-toastify';
 import { AuthContext } from './Context/AuthContext.jsx'
+import SettingsPage from './Pages/SettingsPage.jsx'
 
 const App = () => {
 
@@ -32,6 +33,7 @@ const App = () => {
         <Route path='/signup' element={!authUser ? <SignUpPage /> : <Navigate to={'/chat'} />} />
         <Route path='/login' element={!authUser ? <LoginPage /> : <Navigate to={'/chat'} />} />
         <Route path='/chat' element={authUser ? <ChatPage /> : <Navigate to={'/login'} />} />
+        <Route path='/settings' element={authUser ? <SettingsPage /> : <Navigate to={'/login'} />} />
         <Route path='/profile' element={authUser ? <ProfilePage /> : <Navigate to={'/login'} />} />
       </Routes>
     </>

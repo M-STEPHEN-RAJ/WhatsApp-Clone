@@ -1,81 +1,106 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { AuthContext } from "./AuthContext";
+import { toast } from "react-toastify";
 
 const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
 
+    const [messages, setMessages] = useState([]); 
+    const [users, setUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState(null);
+    const [unseenMessages, setUnseenMessages] = useState({});
 
-    const [messages, setMessages] = useState([
-        {
-        id: 1,
-        senderId: 1,
-        recieverId: 1,
-        text: "To Complete the JSE AI",
-        seen: true,
-        createdAt: "2025-04-28T10:23:27.844Z",
-        },
-        {
-        id: 2,
-        senderId: 2,
-        recieverId: 1,
-        text: "Hi Stephen! All good here, you?",
-        seen: true,
-        createdAt: "2025-04-28T10:25:12.000Z",
-        },
-        {
-        id: 3,
-        senderId: 3,
-        recieverId: 1,
-        text: "Hey Stephen, I’ll be late for the meeting.",
-        seen: false,
-        createdAt: "2025-04-28T10:30:00.000Z",
-        },
-        {
-        id: 4,
-        senderId: 1,
-        recieverId: 4,
-        text: "No problem, Diana. Thanks for letting me know.",
-        seen: true,
-        createdAt: "2025-04-28T10:31:10.000Z",
-        },
-        {
-        id: 5,
-        senderId: 1,
-        recieverId: 5,
-        text: "Hey Ethan, did you check the update?",
-        seen: false,
-        createdAt: "2025-04-28T10:35:00.000Z",
-        },
-        {
-        id: 6,
-        senderId: 6,
-        recieverId: 1,
-        text: "Yeah Stephen, I just saw it. Looks great!",
-        seen: true,
-        createdAt: "2025-04-28T10:36:22.000Z",
-        },
-        {
-        id: 7,
-        senderId: 1,
-        recieverId: 7,
-        text: "Morning Jane! Ready for the task?",
-        seen: true,
-        createdAt: "2025-04-28T10:40:00.000Z",
-        },
-        {
-        id: 8,
-        senderId: 1,
-        recieverId: 8,
-        text: "Hey Smith, all set. Let’s go!",
-        seen: true,
-        createdAt: "2025-04-28T10:42:15.000Z",
-        },
-    ]);    
+    const {socket, axios} = useContext(AuthContext);
+
+    // Get all users
+    const getUsers = async () => {
+        try {
+            const { data } = await axios.get("/api/messages/users");
+
+            if (data.success) {
+                setUsers(data.users);
+                setUnseenMessages(data.unseenMessages);
+            }
+            
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
+    // get selected user messages
+    const getMessages = async (userId) => {
+        try {
+            const { data } = await axios.get(`/api/messages/${userId}`);
+
+            if (data.success) {
+                setMessages(Array.isArray(data.messages) ? data.messages : []);
+            }
+            
+        } catch (error) {
+            toast.error(error.message);            
+        }
+
+    }
+
+    // send message to selected user
+    const sendMessage = async (messageData) => {
+        try {
+            const { data } = await axios.post(`/api/messages/send/${selectedUser._id}`, messageData);
+
+            if (data.success) {
+                setMessages((prevMessages) => [...prevMessages, data.newMessage]);
+            }
+            else {
+                toast.error(data.message);
+            }
+
+        } catch (error) {
+            toast.error(error.message);            
+        }
+    }
+
+    // get new messages
+    const subscribeToMessages = async () => {
+
+        if(!socket) return;
+
+        socket.on("newMessage", (newMessage) => {
+            if(selectedUser && newMessage.senderId === selectedUser._id) {
+                newMessage.seen = true;
+                setMessages((prevMessages) => [...prevMessages, newMessage]);
+                axios.put(`/api/messages/mark/${newMessage._id}`);
+            }
+            else {
+                setUnseenMessages((prevUnseenMessages) => ({
+                    ...prevUnseenMessages, [newMessage.senderId] : 
+                    prevUnseenMessages[newMessage.senderId] ? 
+                    prevUnseenMessages[newMessage.senderId] + 1 : 1
+                }))
+            }
+        })
+
+    }
+
+    // unsubscribe from messages
+    const unsubscribeFromMessages = () => {
+        if(socket) {
+            socket.off("newMessage");
+        }
+    }
+
+    useEffect(() => {
+        subscribeToMessages();
+        return () => unsubscribeFromMessages();
+    }, [socket, selectedUser])
+
+    const value = {
+        messages, users, selectedUser, getUsers, getMessages, sendMessage, setSelectedUser, unseenMessages, setUnseenMessages
+    }
 
     return (
 
-        <ChatContext.Provider value={{ selectedUser, setSelectedUser, messages, setMessages }}>
+        <ChatContext.Provider value={value}>
             {children}
         </ChatContext.Provider>
 

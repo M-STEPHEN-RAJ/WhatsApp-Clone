@@ -7,7 +7,7 @@ export const protectRoute = async (req, res, next) => {
 
     try {
 
-        const token = req.header.token;
+        const token = req.header("token");
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
 

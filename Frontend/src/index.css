@@ -7,3 +7,27 @@ body {
 ::-webkit-scrollbar {
     display: none;
 }
+
+.user-name {
+    transform: translateY(8px);
+    animation: slideUp 0.25s ease-out forwards;
+    animation-delay: 1s;
+}
+
+.user-status {
+    opacity: 0;
+    animation: fadeIn 0.3s ease-out forwards;
+    animation-delay: 1.3s;
+}
+
+@keyframes slideUp {
+    to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}

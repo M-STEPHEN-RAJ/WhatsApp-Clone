@@ -70,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 
     // Logout Function
 
-    const Logout = async () => {
+    const logout = async () => {
 
         localStorage.removeItem("token");
         setToken(null);
@@ -147,7 +147,7 @@ export const AuthProvider = ({ children }) => {
         onlineUsers,
         socket,
         login,
-        Logout,
+        logout,
         updateProfile
 
     }

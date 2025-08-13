@@ -97,12 +97,12 @@ const Sidebar = () => {
             </div>
             <div className={`relative flex items-center gap-5 p-2.5 hover:bg-[#3A3A3A] cursor-pointer rounded 
               ${activeTab === 'settings' ? 'bg-[#3A3A3A] hover:bg-[#373737] after:content-[""] after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:w-[3px] after:h-4 after:bg-[#1DAA61] after:rounded-full' : 'bg-transparent'}`} 
-              onClick={ () => {setActiveTab('settings')} }
+              onClick={ () => {setActiveTab('settings'); navigate('/settings')} }
             >
                 <img width="20px" src={settings} alt="" />
                 {isSidebarOpen && <p className='text-white text-sm'>Settings</p>}
             </div>
-            <div className={`relative flex items-center gap-5 p-2.5 hover:bg-[#3A3A3A] cursor-pointer rounded 
+            <div className={`relative flex items-center gap-5 p-2.5 hover:bg-[rgb(58,58,58)] cursor-pointer rounded 
               ${activeTab === 'profile' ? 'bg-[#3A3A3A] hover:bg-[#373737] after:content-[""] after:absolute after:left-0 after:top-1/2 after:-translate-y-1/2 after:w-[3px] after:h-4 after:bg-[#1DAA61] after:rounded-full' : 'bg-transparent'}`} 
               onClick={ () => {{setActiveTab('profile')}; navigate('/profile')} }
             >

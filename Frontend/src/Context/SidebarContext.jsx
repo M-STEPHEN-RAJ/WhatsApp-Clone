@@ -20,6 +20,9 @@ export const SidebarProvider = ({ children }) => {
         else if (path.startsWith('/profile')) {
             setActiveTab('profile')
         }
+        else if (path.startsWith('/settings')) {
+            setActiveTab('settings')
+        }
 
     }, [location.pathname])
 

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useContext, useEffect, useRef } from 'react'
 import back from '../assets/back.png'
 import search_icon from '../assets/search-icon.png'
 import calls from '../assets/calls.png'
@@ -10,24 +10,56 @@ import mic from '../assets/mic.png'
 import whatsapp from '../assets/whatsapp.png'
 import seen from '../assets/double-tick-seen.png'
 import sent from '../assets/double-tick-sent.png'
+import profile from '../assets/profile.jpg'
+import avatar from '../assets/default-profile.png'
 import { useChat } from '../Context/ChatContext'
+import { AuthContext } from '../Context/AuthContext'
+import { useState } from 'react'
 
 const Message = () => {
 
-  const { selectedUser, setSelectedUser } = useChat();
-  const { messages, setMessages } = useChat();
+  const { messages, selectedUser, setSelectedUser, sendMessage, getMessages } = useChat();
 
-  const currentUserId = 1;
+  const { authUser, onlineUsers } = useContext(AuthContext)
 
   const textareaRef = useRef(null);
 
-  const handleInput = () => {
-    const textarea = textareaRef.current;
-    if (textarea) {
-      textarea.style.height = 'auto'; // reset height
-      textarea.style.height = `${Math.min(textarea.scrollHeight, 5 * 24)}px`; // limit to 5 rows (approx. 24px per row)
+  const [input, setInput] = useState('');
+  
+  // send a message
+  const handleSendMessage = async(e) => {
+    e.preventDefault();
+
+    if(input.trim() === "") return null;
+
+    await sendMessage({text: input.trim()});
+    
+    setInput("")
+  }
+
+  useEffect(() => {
+    if(selectedUser) {
+        getMessages(selectedUser._id)
     }
-  };
+  },[selectedUser])
+
+  // status animation
+  useEffect(() => {
+    if (!selectedUser) return;
+
+    const nameEl = document.querySelector(".user-name");
+    const statusEl = document.querySelector(".user-status");
+
+    if (nameEl && statusEl) {
+        nameEl.classList.remove("user-name");
+        statusEl.classList.remove("user-status");
+
+        void nameEl.offsetWidth;
+
+        nameEl.classList.add("user-name");
+        statusEl.classList.add("user-status");
+    }
+  }, [selectedUser]);
 
   return (
     <div className="w-[68.6%] h-screen flex flex-col">
@@ -39,8 +71,15 @@ const Message = () => {
                     <div onClick={() => setSelectedUser(null)} className="p-2.5 cursor-pointer hover:bg-[#404040] rounded-full">
                         <img src={back} className='w-3 h-3' alt="" /> 
                     </div> 
-                    <img width="40px" className='rounded-full aspect-[1/1]' src={selectedUser.profile} alt="" />
-                    <p className='text-white font-medium text-sm'>{selectedUser.name}</p>
+                    <img width="40px" className='rounded-full aspect-[1/1]' src={selectedUser.profilePic || avatar} alt="" />
+                    <div className="">
+                        <p className='text-white font-medium text-sm user-name'>{selectedUser.fullName}</p>
+                        {
+                            onlineUsers.includes(selectedUser._id)
+                            ? <p className='text-white text-xs user-status'>online</p>
+                            : <p className='text-white text-xs user-status'>offline</p>
+                        }
+                    </div>
                 </div>
 
                 <div className="flex">
@@ -59,20 +98,14 @@ const Message = () => {
             </div>
 
             
-            <div className="flex-grow bg-cover bg-center bg-no-repeat p-5" style={{ backgroundImage: `url(${background})` }}>
+            <div className="flex-grow bg-cover bg-center bg-no-repeat p-5 overflow-y-auto" style={{ backgroundImage: `url(${background})` }}>
 
                 {selectedUser && (
-                    messages
-                    .filter(
-                        msg =>
-                        (msg.senderId === currentUserId && msg.recieverId === selectedUser.id) ||
-                        (msg.senderId === selectedUser.id && msg.recieverId === currentUserId)
-                    )
-                    .map((msg, index) => (
+                    messages.map((msg, index) => (
                         <div
                             key={index}
                             className={`max-w-[60%] my-1 px-4 py-2 rounded-lg text-sm ${
-                                msg.senderId === currentUserId
+                                msg.senderId === authUser._id
                                 ? 'ml-auto bg-[#035B4B] text-white w-fit'
                                 : 'mr-auto bg-[#353535] text-white w-fit'
                             }`}
@@ -82,7 +115,7 @@ const Message = () => {
                                 <p className="text-[10px] text-gray-300 text-right mt-2">
                                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                 </p>
-                                {msg.senderId === currentUserId && (
+                                {msg.senderId === authUser._id && (
                                     <img
                                     src={msg.seen ? seen : sent}
                                     alt={msg.seen ? 'Seen' : 'Sent'}
@@ -107,7 +140,16 @@ const Message = () => {
 
                 <textarea
                     ref={textareaRef}
-                    onInput={handleInput}
+                    onChange={(e) => {
+                        setInput(e.target.value);
+                    }}
+                    value={input}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSendMessage(e);
+                        }
+                    }}
                     className="flex-grow outline-none text-white text-sm bg-transparent p-2.5 resize-none"
                     placeholder="Type a message"
                     rows={1}
