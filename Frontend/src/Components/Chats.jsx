@@ -4,6 +4,7 @@ import profile from '../assets/profile.jpg'
 import avatar from '../assets/default-profile.png'
 import { useChat } from '../Context/ChatContext'
 import { AuthContext } from '../Context/AuthContext'
+import { t } from '../utils/i18n';
 
 const Chats = () => {
 
@@ -16,15 +17,17 @@ const Chats = () => {
   const filteredUsers = input ? users.filter((user) => user.fullName.toLowerCase().includes(input.toLowerCase())) : (users || []);
 
   useEffect(() => {
+
     getUsers();
-  }, [onlineUsers])
+    
+  }, [])
 
   return (
     <div className='flex flex-col ml-[4.2%] bg-[#2C2C2C] h-screen w-[27.2%] border-r-[2px] border-r-[#282828]'>
 
         {/* Head */}
         <div className="p-4">
-            <h2 className='text-white text-xl font-medium'>Chats</h2>
+            <h2 className='text-white text-xl font-medium'>{t("chats.title")}</h2>
         </div>
 
         {/* Search Bar */}
@@ -35,7 +38,7 @@ const Chats = () => {
                 </div>
                 <input 
                  onChange={(e) => setInput(e.target.value)}
-                 className='w-full outline-none text-sm text-white' placeholder='Search or start a new chat' type="text" 
+                 className='w-full outline-none text-sm text-white' placeholder={t("chats.placeholder")} type="text" 
                 />
             </div>
         </div>
@@ -45,9 +48,8 @@ const Chats = () => {
 
             {filteredUsers.map((user) => {
 
-              const lastMsg = (messages || [])
-                .filter((msg) => msg.senderId === user._id || msg.recieverId === user._id)
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+              const lastMsgText = user.lastMessage;
+              const lastMsgDate = user.lastMessageDate ? new Date(user.lastMessageDate) : null;
 
                 return (                
                   <div 
@@ -61,7 +63,7 @@ const Chats = () => {
                     className={`flex gap-4 px-4 py-2.5 rounded-sm hover:bg-[#3A3A3A] cursor-pointer ${selectedUser?._id === user._id ? 'bg-[#454545] hover:bg-[#515151]' : ''}`}
                   >
                       <div className="relative">
-                        <img width="60px" className='rounded-full aspect-[1/1]' src={user.profilePic || avatar} alt="" />
+                        <img width="60px" height="60px" className='rounded-full aspect-[1/1] object-cover' src={user.profilePic || avatar} alt="" />
                         {
                           onlineUsers.includes(user._id)
                           ? <span className='absolute w-2.5 h-2.5 bottom-0 right-0 bg-[#1DAA61] rounded-full'></span>
@@ -72,10 +74,10 @@ const Chats = () => {
                       <div className="w-full flex flex-col gap-1 overflow-hidden">
                           <div className="flex justify-between items-start">
                               <h2 className='text-white font-medium text-sm'>{user.fullName}</h2>
-                              <p className='text-gray-300 text-xs'>{lastMsg ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</p>
+                              <p className='text-gray-300 text-xs'>{lastMsgDate ? lastMsgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                           </div>
                           <div className="flex justify-between items-center gap-5">
-                              <p className='text-gray-300 text-sm truncate'>{lastMsg ? lastMsg.text : ''}</p>
+                              <p className='text-gray-300 text-sm truncate'>{lastMsgText || ''}</p>
                               {
                                 unseenMessages[user._id] > 0 && <span className='w-4 h-4 text-[11px] font-semibold bg-[#1DAA61] rounded-full aspect-square flex items-center justify-center'>{unseenMessages[user._id]}</span>
                               }

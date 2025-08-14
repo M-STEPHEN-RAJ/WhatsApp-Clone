@@ -1,0 +1,51 @@
+{
+  "sidebar": {
+    "chats": "Chats",
+    "calls": "Calls",
+    "status": "Status",
+    "metaAI": "Meta AI",
+    "starred": "Starred messages",
+    "archive": "Archived chats",
+    "settings": "Settings",
+    "profile": "Profile"
+  },
+  "chats": {
+    "title": "Chats",
+    "placeholder": "Search or start a new chat"
+  },
+  "message": {
+    "placeholder": "Type a message",
+    "title": "WhatsApp Clone",
+    "description_1": "A real-time chat application inspired by WhatsApp, featuring user selection,",
+    "description_2": "contextual messaging, and a responsive UI built with React.",
+    "status": {
+      "online": "online",
+      "offline": "offline"
+    },
+    "emoji": "emoji"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "language": "Language",
+    "help": "Help",
+    "help_text": "We'd love to hear your thoughts and suggestions to improve the app.",
+    "logout": "Logout",
+    "github": "GitHub",
+    "linkedin": "LinkedIn",
+    "portfolio": "Portfolio",
+    "copyright": "© 2025 WhatsApp Clone. All rights reserved.",
+    "settings_text": "Easily manage all your app settings."
+  },
+  "profile": {
+    "title": "Profile",
+    "email": "E-mail",
+    "about": "About",
+    "cancel": "Cancel",
+    "save": "Save",
+    "personalize": "Personalize Your Chat Experience"
+  },
+  "common": {
+    "currently_unavailable": "Currently unavailable"
+  }
+}

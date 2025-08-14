@@ -6,6 +6,7 @@ import edit from '../assets/edit.svg'
 import tick from '../assets/tick.svg'
 import update_profile from '../assets/update-profile.png'
 import { AuthContext } from '../Context/AuthContext'
+import { t } from '../utils/i18n';
 
 const Profile = () => {
 
@@ -49,12 +50,12 @@ const Profile = () => {
 
         <div className="h-[590px] flex flex-col justify-center items-center gap-5 px-12 bg-white/5 rounded-xl backdrop-blur-md border border-white/20 shadow-lg z-10">
 
-            <h2 className='mb-3 text-white font-semibold text-2xl'>Profile</h2>
+            <h2 className='mb-3 text-white font-semibold text-2xl'>{t("profile.title")}</h2>
 
             <label htmlFor='avatar' className="relative cursor-pointer">
                 <input onChange={(e) => setSelectedImg(e.target.files[0])} type="file" name="avatar" id="avatar" accept='.png, .jpg, .jpeg' hidden />
                 <img 
-                 className='rounded-full w-28' 
+                 className='rounded-full w-28 h-28 object-cover' 
                  src={selectedImg ? URL.createObjectURL(selectedImg) : authUser?.profilePic || default_profile} 
                  alt="" 
                 />
@@ -92,13 +93,13 @@ const Profile = () => {
             </div>
             
             <div className="flex flex-col gap-2 w-[400px]">
-                <p className='text-gray-300 text-sm'>E-mail</p>
+                <p className='text-gray-300 text-sm'>{t("profile.email")}</p>
                 <h2 className='text-white'>stephenrajm.ug22.ad@francisxavier.ac.in</h2>
             </div>
 
             <div className="flex flex-col gap-2 w-[400px] h-40">
                 <div className="flex justify-between items-center">
-                    <p className='text-gray-300 text-sm'>About</p>
+                    <p className='text-gray-300 text-sm'>{t("profile.about")}</p>
                     <div 
                      className="hover:bg-white/20 rounded-full w-fit p-2 cursor-pointer"
                      onClick={() => setEditBio(!editBio)}
@@ -124,8 +125,8 @@ const Profile = () => {
             </div>
 
             <div className="flex justify-between items-center gap-20 mt-2">
-                <button onClick={handleCancel} className='text-sm text-white bg-white/10 hover:bg-white/20 px-10 py-2 rounded-md cursor-pointer'>Cancel</button>
-                <button onClick={handleSubmit} className='text-sm bg-[#14C861] hover:bg-[#14D261] px-10 py-2 rounded-md font-medium cursor-pointer'>Save</button>
+                <button onClick={handleCancel} className='text-sm text-white bg-white/10 hover:bg-white/20 px-10 py-2 rounded-md cursor-pointer'>{t("profile.cancel")}</button>
+                <button onClick={handleSubmit} className='text-sm bg-[#14C861] hover:bg-[#14D261] px-10 py-2 rounded-md font-medium cursor-pointer'>{t("profile.save")}</button>
             </div>
 
         </div>
@@ -134,7 +135,7 @@ const Profile = () => {
 
             <img className='w-80' src={update_profile} alt="" />
 
-            <h2 className='mb-3 text-white font-semibold text-2xl'>Personalize Your Chat Experience</h2>
+            <h2 className='mb-3 text-center text-white font-semibold text-xl'>{t("profile.personalize")}</h2>
 
         </div>
 

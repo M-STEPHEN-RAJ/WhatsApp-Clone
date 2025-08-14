@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
 import { toast } from "react-toastify";
 
@@ -14,7 +14,7 @@ export const ChatProvider = ({ children }) => {
     const {socket, axios} = useContext(AuthContext);
 
     // Get all users
-    const getUsers = async () => {
+    const getUsers = useCallback(async () => {
         try {
             const { data } = await axios.get("/api/messages/users");
 
@@ -26,7 +26,7 @@ export const ChatProvider = ({ children }) => {
         } catch (error) {
             toast.error(error.message);
         }
-    }
+    }, [axios]);
 
     // get selected user messages
     const getMessages = async (userId) => {
@@ -59,40 +59,31 @@ export const ChatProvider = ({ children }) => {
             toast.error(error.message);            
         }
     }
-
-    // get new messages
-    const subscribeToMessages = async () => {
-
-        if(!socket) return;
-
-        socket.on("newMessage", (newMessage) => {
-            if(selectedUser && newMessage.senderId === selectedUser._id) {
-                newMessage.seen = true;
-                setMessages((prevMessages) => [...prevMessages, newMessage]);
-                axios.put(`/api/messages/mark/${newMessage._id}`);
-            }
-            else {
-                setUnseenMessages((prevUnseenMessages) => ({
-                    ...prevUnseenMessages, [newMessage.senderId] : 
-                    prevUnseenMessages[newMessage.senderId] ? 
-                    prevUnseenMessages[newMessage.senderId] + 1 : 1
-                }))
-            }
-        })
-
-    }
-
-    // unsubscribe from messages
-    const unsubscribeFromMessages = () => {
-        if(socket) {
-            socket.off("newMessage");
-        }
-    }
-
+    
     useEffect(() => {
-        subscribeToMessages();
-        return () => unsubscribeFromMessages();
-    }, [socket, selectedUser])
+        if (!socket) return;
+
+        const handleNewMessage = (newMessage) => {
+            if (selectedUser && newMessage.senderId === selectedUser._id) {
+                newMessage.seen = true;
+                setMessages(prev => [...prev, newMessage]);
+                axios.put(`/api/messages/mark/${newMessage._id}`);
+            } else {
+                setUnseenMessages(prev => ({
+                    ...prev,
+                    [newMessage.senderId]: (prev[newMessage.senderId] || 0) + 1
+                }));
+            }
+
+            getUsers();
+        };
+
+        socket.on("newMessage", handleNewMessage);
+
+        return () => {
+            socket.off("newMessage", handleNewMessage);
+        };
+    }, [socket, selectedUser, getUsers]);
 
     const value = {
         messages, users, selectedUser, getUsers, getMessages, sendMessage, setSelectedUser, unseenMessages, setUnseenMessages
