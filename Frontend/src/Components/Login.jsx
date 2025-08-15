@@ -35,19 +35,19 @@ const Login = () => {
   return (
     <>
       <div className="flex justify-center items-center h-screen w-full">
-        <div className="relative h-[590px] flex flex-col justify-center items-center gap-5 py-8 px-12 bg-white/5 rounded-xl backdrop-blur-md border border-white/20 shadow-lg z-10">
+        <div className="relative max-w-[400px] w-[90%] sm:max-w-max sm:w-auto h-[550px] sm:h-[590px] md:h-[590px] lg:h-[590px] xl:h-[590px] flex flex-col justify-center items-center gap-5 py-8 md:py-2 lg:py-4 xl:py-8 px-4 sm:px-8 md:px-4 lg:px-8 xl:px-12 bg-white/5 rounded-xl backdrop-blur-md border border-white/20 shadow-lg z-10">
           <div onClick={() => navigate('/')} className="absolute top-5 left-5 p-2 hover:bg-white/10 rounded-full flex justify-center items-center cursor-pointer">
             <img className="w-3.5" src={back} alt="" />
           </div>
 
           <div className="flex flex-col justify-center items-center gap-2 mb-5">
-            <img src={logo} className="w-14 h-14" alt="" />
-            <h2 className="text-white font-semibold text-xl">
+            <img src={logo} className="w-10 h-10 lg:w-14 lg:h-14" alt="" />
+            <h2 className="text-white font-semibold md:text-lg lg:text-xl">
               Login to WhatsApp
             </h2>
           </div>
 
-          <div className="w-[400px] flex flex-col gap-7">
+          <div className="w-full sm:w-[400px] md:w-[320px] lg:w-[400px] flex flex-col gap-7">
             <div className="flex flex-col gap-3">
               <label className="text-white font-medium" htmlFor="mail">
                 E-mail
@@ -80,7 +80,7 @@ const Login = () => {
 
           <button
             onClick={handleLogin}
-            className="bg-[#14C861] hover:bg-[#14D261] px-[75px] py-1.5 my-2 font-semibold rounded-3xl cursor-pointer mt-10"
+            className="bg-[#14C861] hover:bg-[#14D261] px-16 lg:px-[75px] py-1.5 my-2 font-semibold rounded-3xl cursor-pointer mt-10"
           >
             Login
           </button>
@@ -98,13 +98,13 @@ const Login = () => {
           </div>
         </div>
 
-        <div className="relative -left-1 bg-[#2A2A2A] flex flex-col justify-center items-center gap-10 w-[700px] h-[590px] border border-white/20 border-l-transparent rounded-r-xl">
-          <img className="w-80 h-80" src={login_img} alt="" />
+        <div className="hidden relative -left-1 bg-[#2A2A2A] md:flex flex-col justify-center items-center gap-10 md:w-[400px] lg:w-[500px] xl:w-[700px] md:h-[590px] lg:h-[590px] xl:h-[590px] border border-white/20 border-l-transparent rounded-r-xl">
+          <img className="w-60 h-60 lg:w-80 lg:h-80" src={login_img} alt="" />
           <div className="flex flex-col gap-2">
-            <h2 className="text-white font-bold text-center text-2xl leading-8 tracking-wide">
+            <h2 className="text-white font-bold text-center text-xl lg:text-2xl leading-8 tracking-wide">
               Welcome back to WhatsApp Clone
             </h2>
-            <h3 className="text-white font-semibold text-center text-xl leading-8">
+            <h3 className="text-white lg:font-semibold text-center lg:text-xl leading-8">
               Please log in to continue!
             </h3>
           </div>

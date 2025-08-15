@@ -13,12 +13,19 @@ const Chats = () => {
   const { onlineUsers } = useContext(AuthContext);
 
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const filteredUsers = input ? users.filter((user) => user.fullName.toLowerCase().includes(input.toLowerCase())) : (users || []);
 
   useEffect(() => {
 
-    getUsers();
+    (async () => {
+      setLoading(true);
+      await getUsers();
+      setTimeout(() => {
+      setLoading(false);
+      }, 1500);
+      })();
     
   }, [])
 
@@ -46,7 +53,22 @@ const Chats = () => {
         {/* Contact Body */}
         <div className="mx-2 mt-4 pb-1 overflow-y-auto flex-grow flex flex-col gap-1">
 
-            {filteredUsers.map((user) => {
+          {loading ? (
+            [...Array(8)].map((_, i) => (
+              <div
+                key={i}
+                className="flex gap-4 px-4 py-2.5 rounded-sm bg-[#3A3A3A] animate-pulse"
+              >
+                <div className="w-[50px] h-[50px] aspect-square rounded-full bg-[#515151]"></div>
+                <div className="flex flex-col gap-5 w-full">
+                  <div className="h-3 bg-[#515151] rounded w-1/2"></div>
+                  <div className="h-2.5 bg-[#515151] rounded w-3/4"></div>
+                </div>
+              </div>
+            ))
+          ) : (
+
+            filteredUsers.map((user) => {
 
               const lastMsgText = user.lastMessage;
               const lastMsgDate = user.lastMessageDate ? new Date(user.lastMessageDate) : null;
@@ -85,7 +107,11 @@ const Chats = () => {
                       </div>
                   </div>
                 );
-            })}
+            })
+
+          )}
+
+            
 
         </div>
 

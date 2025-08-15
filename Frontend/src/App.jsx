@@ -12,7 +12,15 @@ import SettingsPage from './Pages/SettingsPage.jsx'
 
 const App = () => {
 
-  const { authUser } = useContext(AuthContext);
+  const { authUser, loading } = useContext(AuthContext);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-[#2C2C2C]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-b-white"></div>
+      </div>
+    );
+  }
 
   return (
     <>

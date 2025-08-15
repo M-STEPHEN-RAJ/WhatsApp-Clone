@@ -15,6 +15,8 @@ export const AuthProvider = ({ children }) => {
     const [onlineUsers, setOnlineUsers] = useState([]);
     const [socket, SetSocket] = useState(null);
 
+    const [loading, setLoading] = useState(true);
+
     // Check if user auth to connect socket
     const checkAuth = async () => {
 
@@ -30,6 +32,11 @@ export const AuthProvider = ({ children }) => {
         catch (error) {
 
             toast.error(error.message)
+
+        }
+        finally {
+
+            setLoading(false)
 
         }
 
@@ -148,7 +155,8 @@ export const AuthProvider = ({ children }) => {
         socket,
         login,
         logout,
-        updateProfile
+        updateProfile,
+        loading
 
     }
 
