@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import search_icon from '../assets/search-icon.png'
-import profile from '../assets/profile.jpg'
+import image_icon from '../assets/image-icon.png'
 import avatar from '../assets/default-profile.png'
 import { useChat } from '../Context/ChatContext'
 import { AuthContext } from '../Context/AuthContext'
@@ -30,7 +30,7 @@ const Chats = () => {
   }, [])
 
   return (
-    <div className='flex flex-col ml-[4.2%] bg-[#2C2C2C] h-screen w-[27.2%] border-r-[2px] border-r-[#282828]'>
+    <div className='flex flex-col ml-[55px] bg-[#2C2C2C] h-screen w-[27.2%] border-r-[2px] border-r-[#282828]'>
 
         {/* Head */}
         <div className="p-4">
@@ -73,6 +73,18 @@ const Chats = () => {
               const lastMsgText = user.lastMessage;
               const lastMsgDate = user.lastMessageDate ? new Date(user.lastMessageDate) : null;
 
+              let displayMsg = <span className="text-[#979797]">Messages are end-to-end encrypted.</span>;
+              if (user.lastMessage) {
+                displayMsg = <span>{user.lastMessage}</span>;
+              } else if (user.lastMessageImage) {
+                displayMsg = (
+                  <span className="flex items-center gap-1 whitespace-nowrap">
+                    <img src={image_icon} alt="image" className="w-4 h-4 inline-block" />
+                    <span>Image</span>
+                  </span>
+                );
+              }
+
                 return (                
                   <div 
                     key={user._id} 
@@ -99,7 +111,7 @@ const Chats = () => {
                               <p className='text-gray-300 text-xs'>{lastMsgDate ? lastMsgDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</p>
                           </div>
                           <div className="flex justify-between items-center gap-5">
-                              <p className='text-gray-300 text-sm truncate'>{lastMsgText || ''}</p>
+                              <p className='text-gray-300 text-sm truncate'>{displayMsg || ''}</p>
                               {
                                 unseenMessages[user._id] > 0 && <span className='w-4 h-4 text-[11px] font-semibold bg-[#1DAA61] rounded-full aspect-square flex items-center justify-center'>{unseenMessages[user._id]}</span>
                               }

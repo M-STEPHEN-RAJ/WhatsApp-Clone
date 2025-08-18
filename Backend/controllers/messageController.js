@@ -40,6 +40,7 @@ export const getUsersForSidebar = async (req, res) => {
                 return {
                     ...user,
                     lastMessage: lastMessage ? lastMessage.text : null,
+                    lastMessageImage: lastMessage ? lastMessage.image : null,
                     lastMessageDate: lastMessage ? lastMessage.createdAt : null
                 };
             })

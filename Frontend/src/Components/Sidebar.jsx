@@ -55,7 +55,7 @@ const Sidebar = () => {
     }, [isSidebarOpen])
 
   return (
-    <div ref={sidebarRef} className={`fixed flex flex-col justify-between bg-[#282828] p-2 h-screen z-50 ${isSidebarOpen ? 'w-[17%]' : 'w-[4.2%]'}`}>
+    <div ref={sidebarRef} className={`fixed flex flex-col justify-between bg-[#282828] p-2 h-screen z-50 ${isSidebarOpen ? 'w-[17%]' : 'w-[55px]'}`}>
 
         {/* Top */}
         <div className="flex flex-col gap-1">

@@ -18,6 +18,7 @@ import send from '../assets/send.png'
 import { useChat } from '../Context/ChatContext'
 import { AuthContext } from '../Context/AuthContext'
 import { t } from '../utils/i18n';
+import { toast } from 'react-toastify';
 
 const Message = () => {
 
@@ -34,6 +35,8 @@ const Message = () => {
   const [input, setInput] = useState('');
   const [showArrow, setShowArrow] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+
+  const [aiLoading, setAiLoading] = useState(false);
   
   // send a message
   const handleSendMessage = async(e) => {
@@ -44,6 +47,40 @@ const Message = () => {
     await sendMessage({text: input.trim()});
     
     setInput("")
+
+    if (selectedUser._id === AI_USER_ID) {
+        setAiLoading(true);
+        setTimeout(() => {
+        setAiLoading(false);
+        }, 2000);
+    }
+  }
+
+  // send a Image
+  const handleSendImage = async(e) => {
+
+    const file = e.target.files[0]
+
+    if(!file || !file.type.startsWith("image/")) {
+      toast.error("select an image file")
+      return;
+    }
+
+    const MAX_SIZE = 4 * 1024 * 1024;
+    if (file.size > MAX_SIZE) {
+      toast.error("Image size must be less than 4MB");
+      e.target.value = "";
+      return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onloadend = async() => {
+      await sendMessage({ image: reader.result })
+      e.target.value = ""
+    }
+
+    reader.readAsDataURL(file)
   }
 
   useEffect(() => {
@@ -102,6 +139,14 @@ const Message = () => {
     el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
     setShowArrow(false);
   };
+
+  const TypingAnimation = () => (
+    <div className="flex gap-1 items-center bg-[#353535] text-white px-3 py-2 rounded-lg w-fit transition-all duration-100">
+        <span className="w-1.5 h-1.5 bg-[#868686] rounded-full animate-bounce"></span>
+        <span className="w-1.5 h-1.5 bg-[#868686] rounded-full animate-bounce [animation-delay:0.2s]"></span>
+        <span className="w-1.5 h-1.5 bg-[#868686] rounded-full animate-bounce [animation-delay:0.4s]"></span>
+    </div>
+  );
 
   return (
     <div className="relative w-[68.6%] h-screen flex flex-col">
@@ -163,36 +208,54 @@ const Message = () => {
              style={{ backgroundImage: `url(${background})` }}
             >
 
-                {selectedUser && (
-                    messages.map((msg, index) => (
-                        <div
-                            key={index}
-                            className={`max-w-[60%] my-2 px-4 py-2 rounded-lg text-sm ${
-                                msg.senderId === authUser._id
-                                ? 'ml-auto bg-[#035B4B] text-white w-fit'
-                                : 'mr-auto bg-[#353535] text-white w-fit'
-                            }`}
-                        >
-                            <p>{msg.text}</p>
-                            <div className="flex justify-end items-center gap-2">
-                                <p className="text-[10px] text-gray-300 text-right mt-2">
-                                    {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                                {msg.senderId === authUser._id && (
-                                    <img
-                                    src={msg.seen ? seen : sent}
-                                    alt={msg.seen ? 'Seen' : 'Sent'}
-                                    className="w-3 h-3 mt-2"
-                                    />
-                                )}                                
-                            </div>
-                        </div>
-                    ))
-                )}              
+              {selectedUser && (
+                <>
+                  {messages.map((msg, index) => (
+                    <div
+                      key={index}
+                      className={`max-w-[60%] my-2 py-2 rounded-lg text-sm
+                        ${msg.image ? 'px-1 pt-1' : 'px-4'} 
+                        ${msg.senderId === authUser._id
+                          ? 'ml-auto bg-[#035B4B] text-white w-fit'
+                          : 'mr-auto bg-[#353535] text-white w-fit'
+                        }`}
+                    >
+                      {msg.image ? (
+                        <img
+                          src={msg.image}
+                          alt="sent"
+                          className="rounded-md max-w-[250px] max-h-[250px] object-cover"
+                        />
+                      ) : (
+                        <p>{msg.text}</p>
+                      )}
+                      <div className="flex justify-end items-center gap-2">
+                        <p className="text-[10px] text-gray-300 text-right mt-2">
+                          {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                        {msg.senderId === authUser._id && (
+                          <img
+                            src={msg.seen ? seen : sent}
+                            alt={msg.seen ? 'Seen' : 'Sent'}
+                            className="w-3 h-3 mt-2"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* Show typing bubble below all messages */}
+                  {aiLoading && selectedUser._id === AI_USER_ID && (
+                    <div className="mr-auto my-2">
+                      <TypingAnimation />
+                    </div>
+                  )}
+                </>
+              )}              
                 
             </div>
 
-            <div className="w-full py-1 px-2 flex flex-wrap gap-1 bg-[#2C2C2C] border-t-[2px] border-t-[#282828]">
+            <div className="w-full py-1 px-2 flex items-center flex-wrap gap-1 bg-[#2C2C2C] border-t-[2px] border-t-[#282828]">
 
                 <div ref={emojiRef} className="relative">
                     <div 
@@ -215,9 +278,19 @@ const Message = () => {
                     )}
                 </div>
 
-                <div className="py-2.5 px-3 hover:bg-[#404040] rounded-md cursor-pointer">
-                    <img src={attachment} className='w-4 h-4' alt="" />
-                </div>
+                <label 
+                  htmlFor="imageUpload"
+                  className="py-2.5 px-3 hover:bg-[#404040] rounded-md cursor-pointer flex items-center"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleSendImage}
+                    id="imageUpload"
+                    className="hidden"
+                  />
+                  <img src={attachment} className="w-4 h-4" alt="attachment" />
+                </label>
 
                 <textarea
                     ref={textareaRef}
