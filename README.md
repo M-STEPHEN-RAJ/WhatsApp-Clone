@@ -4,7 +4,7 @@ A **real-time chat application inspired by WhatsApp**, built with **React.js** a
 
 ## 🔗 Live Demo  
 
-👉 **[WhatsApp Clone](https://spotify-clone-hosting.vercel.app/)**  
+👉 **[WhatsApp Clone](https://whatsapp-clone-hosting.web.app/)**  
 
 ## 🚀 Features  
 
